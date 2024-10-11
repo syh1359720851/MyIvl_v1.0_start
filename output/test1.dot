@@ -1,0 +1,18 @@
+digraph "op_exp0.v" {
+label="op_exp0.v";
+rankdir="LR";
+remincross=true;
+n1 [ shape=octagon, label="a",color="Black",frontcolor="Black"];
+n2 [ shape=octagon, label="b",color="Black",frontcolor="Black"];
+n4 [ shape=octagon, label="c",color="Black",frontcolor="Black"];
+n5 [ shape=octagon, label="q",color="Black",frontcolor="Black"];
+n3 [ shape=diamond, label="q2",color="Black",frontcolor="Black"];
+c9 [ shape=record, label="{{<p6> A|<p7> B}|$1\n$+|{<p8> Y}}", ];
+n1:e -> c9:p6:w[color="Black",frontcolor="Black"];
+n2:e -> c9:p7:w[color="Black",frontcolor="Black"];
+c9:p8:e -> n3:w[color="Black",frontcolor="Black"];
+c10 [ shape=record, label="{{<p7> B|<p6> A}|$2\n$+|{<p8> Y}}", ];
+n4:e -> c10:p7:w[color="Black",frontcolor="Black"];
+c10:p8:e -> n5:w[color="Black",frontcolor="Black"];
+n3:e -> c10:p6:w[color="Black",frontcolor="Black"];
+}
