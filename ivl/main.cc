@@ -22,7 +22,6 @@
 # include  "compiler.h"
 # include  "discipline.h"
 # include  "t-dll.h"
-# include "Mynetlist.h"
 
 #include "mystruct.h"
 
@@ -31,7 +30,6 @@ using namespace std;
 
 # include  "ivl_alloc.h"
 
-# include  "Mynetlist.h"
 /* Count errors detected in flag processing. */
 unsigned flag_errors = 0;
 static unsigned long pre_process_fail_count = 0;
@@ -165,37 +163,36 @@ const bool CASE_SENSITIVE = false;
 
 bool synthesis = true;
 
-extern MyDesign* My_elaborate(list <perm_string> root);
-extern int My_show_netlist(MyDesign* des);
-
 static void find_module_mention(map<perm_string, bool>& check_map, Module* m);
 static void find_module_mention(map<perm_string, bool>& check_map, PGenerate* s);
 
 int main(int argc, char* argv[])
 {
 
-
-	const char* net_path = "netlist_dump.txt";
-	const char* pf_path = "pform_dump.txt";
-
+	//const char* net_path = "netlist_dump.txt";
+	//const char* pf_path = "pform_dump.txt";
 
 	flags["-o"] = strdup("a.out");
+	
+	// 将 Blif 文件转化为 verilog 文件
+	BlifElaborate myBlif;
+	myBlif.BlifElaborateRead();
+	myBlif.Blif2Verilog();
 
+	string filename = myBlif.getFileName();
+	filename += ".v";
 
-
-
-	int arg = 2;
-	while (arg < argc) {
-		perm_string path = filename_strings.make(argv[arg++]);
-		source_files.push_back(path);
-	}
-
+	// source_files 存储所有文件
+	perm_string path = filename_strings.make(filename);
+	source_files.push_back(path);
+	
+	// 文件为空时报错
 	if (source_files.empty()) {
 		cerr << "No input files." << endl;
 		return 1;
 	}
 
-
+	// 初始化编译
 	lexor_keyword_mask = 0;
 	switch (generation_flag) {
 	case GN_VER2012:
@@ -220,9 +217,7 @@ int main(int argc, char* argv[])
 		lexor_keyword_mask |= GN_KEYWORDS_1364_1995;
 	}
 
-	/* Parse the input. Make the pform. */
-	//cout << "INPUT PARSE............to be implemented" << endl;
-
+	// 编译
 	int rc = 0;
 	for (unsigned idx = 0; idx < source_files.size(); idx += 1) {
 		rc += pform_parse(source_files[idx]);
@@ -232,9 +227,10 @@ int main(int argc, char* argv[])
 		return rc;
 	}
 
+	// 处理各个文件之间的关系，如果一个文件要引用另一个文件，被引用的文件就是root
 	if (roots.empty()) {
 		map<perm_string, bool> mentioned_p;
-		map<perm_string, Module*>::iterator mod;
+		map<perm_string, Module*>::iterator mod;  // mod: map<filename, all the things in this file>
 		if (verbose_flag)
 			cout << "LOCATING TOP-LEVEL MODULES" << endl << "  ";
 		for (mod = pform_modules.begin()
@@ -256,27 +252,22 @@ int main(int argc, char* argv[])
 			/* What's left might as well be chosen as a root. */
 			if (verbose_flag)
 				cout << " " << (*mod).second->mod_name();
-			roots.push_back((*mod).second->mod_name());
+			roots.push_back((*mod).second->mod_name());  // 将文件名插入到root中
 		}
 		if (verbose_flag)
 			cout << endl;
 	}
 
-	BilfElaborate myBilf;
-	myBilf.BilfElaborateRead();
-	myBilf.Bilf2Verilog();
+	// 遍历所有 root 文件
+	for (list<perm_string>::const_iterator root = roots.begin()
+		; root != roots.end(); ++root) {
 
+		map<perm_string, Module*>::const_iterator mod = pform_modules.find(*root);
 
-	cout << "ELABORATING DESIGN.....to be implemented" << endl;
-	MyDesign* des = My_elaborate(roots);
+		Module* rmod = (*mod).second;  // rmod 指向该文件的所有信息
+	}
 
-	cout << "SHOW NETLIST...........to be implemented" << endl;
-	My_show_netlist(des);
-
-
-	delete des;
-
-	/* Done with all the pform data. Delete the modules. */
+	// 内存管理
 	for (map<perm_string, Module*>::iterator idx = pform_modules.begin()
 		; idx != pform_modules.end(); ++idx) {
 

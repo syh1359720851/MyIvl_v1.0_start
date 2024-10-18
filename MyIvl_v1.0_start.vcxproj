@@ -35,7 +35,6 @@
     <ClInclude Include="ivl\ivl_target_priv.h" />
     <ClInclude Include="ivl\lexor_keyword.h" />
     <ClInclude Include="ivl\Module.h" />
-    <ClInclude Include="ivl\Mynetlist.h" />
     <ClInclude Include="ivl\mystruct.h" />
     <ClInclude Include="ivl\named.h" />
     <ClInclude Include="ivl\netclass.h" />
@@ -83,6 +82,7 @@
     <ClInclude Include="ivl\version_tag.h" />
     <ClInclude Include="ivl\vpi_user.h" />
     <ClInclude Include="ivl\_pli_types.h" />
+    <ClInclude Include="scheduling.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ivl\AStatement.cc" />
@@ -117,8 +117,6 @@
     <ClCompile Include="ivl\load_module.cc" />
     <ClCompile Include="ivl\main.cc" />
     <ClCompile Include="ivl\Module.cc" />
-    <ClCompile Include="ivl\Myelaborate.cc" />
-    <ClCompile Include="ivl\Myscope.cc" />
     <ClCompile Include="ivl\mystruct.cpp" />
     <ClCompile Include="ivl\netclass.cc" />
     <ClCompile Include="ivl\netdarray.cc" />
