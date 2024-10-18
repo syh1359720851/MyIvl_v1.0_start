@@ -37,3 +37,5 @@ public:
 	void ASAP();  // one for this func
 	void ALAP();  // and one for this func
 };
+
+// syh_remote change 1
