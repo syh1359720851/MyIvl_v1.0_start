@@ -198,13 +198,13 @@
     <ClInclude Include="ivl\getopt.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="ivl\Mynetlist.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ivl\utils.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="ivl\mystruct.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="scheduling.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -504,12 +504,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ivl\getopt.cc">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ivl\Myelaborate.cc">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ivl\Myscope.cc">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ivl\utils.cpp">

@@ -1,10 +1,10 @@
 #include"mystruct.h"
 
-BilfElaborate::BilfElaborate()
+BlifElaborate::BlifElaborate()
 {
 }
 
-void BilfElaborate::BilfElaborateRead()
+void BlifElaborate::BlifElaborateRead()
 {
     ifstream file("test1.blif"); // 替换为你的文件路径
     if (!file.is_open()) {
@@ -42,18 +42,18 @@ void BilfElaborate::BilfElaborateRead()
             }
         }
         else if (token == ".names") {
-            BilfWire myBilfWire;//为每个names块设置一个封装的数据结构
+            BlifWire myBlifWire;//为每个names块设置一个封装的数据结构
 
             // 继续解析 .names 行中的令牌
             while (iss >> token) {
                 setWire(token);// 使用设置函数添加端口中没有的端口
-                myBilfWire.addHead(token);//设置里面的所有端口
+                myBlifWire.addHead(token);//设置里面的所有端口
             }
-            string outputName = myBilfWire.getHeadoutput(); 
-            myBilfWire.setOutput(outputName);//设置输出端口的符号
+            string outputName = myBlifWire.getHeadoutput(); 
+            myBlifWire.setOutput(outputName);//设置输出端口的符号
             string nexline;
             while (getline(file, nexline) && (isdigit(nexline[0]) || nexline[0] == '-')) {
-                const vector<string>& it = myBilfWire.getHead();//获得表头
+                const vector<string>& it = myBlifWire.getHead();//获得表头
                 string expr;
                 bool first = true;
                 for (size_t i = 0; i < it.size(); ++i) {
@@ -68,9 +68,9 @@ void BilfElaborate::BilfElaborateRead()
                         first = false;
                     }
                 }
-                myBilfWire.addLogic(expr);
+                myBlifWire.addLogic(expr);
             }
-            myBilfWires.push_back(myBilfWire);
+            myBlifWires.push_back(myBlifWire);
 
 
             if (!nexline.empty() && !isdigit(nexline[0])) {
@@ -86,27 +86,27 @@ void BilfElaborate::BilfElaborateRead()
 
 }
 
-void BilfElaborate::setFileName(const string& filename)
+void BlifElaborate::setFileName(const string& filename)
 {
     fileName = filename;
 }
 
-string BilfElaborate::getFileName()
+string BlifElaborate::getFileName()
 {
     return fileName;
 }
 
-void BilfElaborate::setInput(const string& inputName)
+void BlifElaborate::setInput(const string& inputName)
 {
     input.push_back(inputName);
 }
 
-void BilfElaborate::setOutput(const string& outputName)
+void BlifElaborate::setOutput(const string& outputName)
 {
     output.push_back(outputName);
 }
 
-void BilfElaborate::setWire(const string& wireName)
+void BlifElaborate::setWire(const string& wireName)
 {
     auto it = find(wire.begin(), wire.end(), wireName);
     if (it == wire.end()) {
@@ -115,9 +115,9 @@ void BilfElaborate::setWire(const string& wireName)
     }
 }
 
-void BilfElaborate::Bilf2Verilog()
+void BlifElaborate::Blif2Verilog()
 {
-    std::ofstream outFile("./test.v");
+    std::ofstream outFile(this->fileName + ".v");
 
     // 写入文件名
     string fileName = getFileName();
@@ -144,7 +144,7 @@ void BilfElaborate::Bilf2Verilog()
     }
     outFile << endl;
 
-    for (auto blifWire : myBilfWires) {
+    for (auto blifWire : myBlifWires) {
         outFile << "assign " << blifWire.getOutput() << " = ";
         const auto& it = blifWire.getLogic();
         for (size_t i = 0; i < it.size(); ++i) {
@@ -166,42 +166,42 @@ void BilfElaborate::Bilf2Verilog()
 
 }
 
-BilfWire::BilfWire()
+BlifWire::BlifWire()
 {
 }
 
-void BilfWire::setOutput(const string& outPutName)
+void BlifWire::setOutput(const string& outPutName)
 {
     Output = outPutName;
 }
 
-void BilfWire::addLogic(const string& logicRow)
+void BlifWire::addLogic(const string& logicRow)
 {
     logic.push_back(logicRow);
 }
 
-void BilfWire::addHead(const string& headName)
+void BlifWire::addHead(const string& headName)
 {
     head.push_back(headName);
 }
 
-const vector<string>& BilfWire::getHead()
+const vector<string>& BlifWire::getHead()
 {
     return head;
 }
 
-string BilfWire::getOutput()
+string BlifWire::getOutput()
 {
     return Output;
 }
 
-string BilfWire::getHeadoutput()
+string BlifWire::getHeadoutput()
 {
     return head.back();
 }
 
 
-const vector<string>& BilfWire::getLogic()
+const vector<string>& BlifWire::getLogic()
 {
     return logic;
 }
