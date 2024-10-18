@@ -81,7 +81,6 @@ void BlifElaborate::BlifElaborateRead()
             }
         }
     }
-    int a = 1;
     file.close();
 
 }
