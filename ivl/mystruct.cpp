@@ -147,7 +147,19 @@ void BlifElaborate::Blif2Verilog()
         outFile << "assign " << blifWire.getOutput() << " = ";
         const auto& it = blifWire.getLogic();
         for (size_t i = 0; i < it.size(); ++i) {
-            outFile << " " << it[i] << " ";
+            //判断当前行是否存在复合块
+            bool hasAnd = false;
+            for (char ch : it[i]) {
+                if (ch == '&') {
+                    hasAnd = true;
+                }
+            }
+            if (hasAnd && it.size() > 1) {
+                outFile << "(" << it[i] << ")";
+            }
+            else {
+                outFile << " " << it[i] << " ";
+            }
             if (i < it.size() - 1) {
                 outFile << " | ";
             }
