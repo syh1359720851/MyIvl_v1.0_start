@@ -114,6 +114,16 @@ void BlifElaborate::setWire(const string& wireName)
     }
 }
 
+const std::vector<std::string>& BlifElaborate::getInput() const
+{
+    return input;
+}
+
+const std::vector<std::string>& BlifElaborate::getOutput() const
+{
+    return output;
+}
+
 void BlifElaborate::Blif2Verilog()
 {
     std::ofstream outFile(this->fileName + ".v");

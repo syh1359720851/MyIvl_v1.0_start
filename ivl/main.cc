@@ -24,6 +24,7 @@
 # include  "t-dll.h"
 
 #include "mystruct.h"
+#include "scheduling.h"
 
 using namespace std;
 
@@ -265,6 +266,9 @@ int main(int argc, char* argv[])
 		map<perm_string, Module*>::const_iterator mod = pform_modules.find(*root);
 
 		Module* rmod = (*mod).second;  // rmod 指向该文件的所有信息
+
+		Scheduling schedule;
+		schedule.BuildTree(rmod, myBlif);
 	}
 
 	// 内存管理

@@ -22,6 +22,7 @@
 # include  <cstdlib>
 # include  <cstring>
 # include  <cassert>
+#include <string>
 
 #ifdef CHECK_WITH_VALGRIND
 # include  "ivl_alloc.h"
@@ -241,3 +242,8 @@ ostream& operator << (ostream&out, perm_string that)
 }
 
 const perm_string empty_perm_string = perm_string::literal("");
+
+perm_string::perm_string(const string str)
+{
+    text_ = str.c_str();
+}

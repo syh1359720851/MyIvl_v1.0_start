@@ -25,6 +25,7 @@ class perm_string {
 
     public:
       perm_string() : text_(0) { }
+      perm_string(const string str);
       perm_string(const perm_string&that) : text_(that.text_) { }
       ~perm_string() { }
 

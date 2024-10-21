@@ -44,6 +44,8 @@ public:
     void setInput(const string& inputName);
     void setOutput(const string& outputName);
     void setWire(const string& wireName);
+    const vector<string>& getInput() const;
+    const vector<string>& getOutput() const;
     void BlifElaborateRead();  // ½âÎö
     void Blif2Verilog();   //Êä³ö
 

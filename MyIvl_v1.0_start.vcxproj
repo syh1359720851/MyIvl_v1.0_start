@@ -82,6 +82,7 @@
     <ClInclude Include="ivl\version_tag.h" />
     <ClInclude Include="ivl\vpi_user.h" />
     <ClInclude Include="ivl\_pli_types.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="scheduling.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +187,15 @@
     <ClCompile Include="ivl\utils.cpp" />
     <ClCompile Include="ivl\verinum.cc" />
     <ClCompile Include="ivl\verireal.cc" />
+    <ClCompile Include="scheduling.cc" />
+    <ClCompile Include="scheduling.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sample.v" />
+    <None Include="test1.blif" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MyIvl_v1.0_start.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
