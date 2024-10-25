@@ -21,7 +21,7 @@ private:
 	int gateType;
 	bool endNode;  // 是否为端点
 	vector<string> inputs;  // 输入列表
-	string output;  // 输出
+	string output;  // node
 	vector<shared_ptr<AssignmentTreeNode>> forwardNodes;  // 前驱节点
 	vector<shared_ptr<AssignmentTreeNode>> backNodes;  // 后续节点
 };
