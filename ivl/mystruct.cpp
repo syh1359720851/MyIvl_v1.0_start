@@ -6,9 +6,9 @@ BlifElaborate::BlifElaborate()
 
 void BlifElaborate::BlifElaborateRead()
 {
-    ifstream file("test1.blif"); // æ›¿æ¢ä¸ºä½ çš„æ–‡ä»¶è·¯å¾„
+    ifstream file("test1.blif"); // Ìæ»»ÎªÄãµÄÎÄ¼şÂ·¾¶
     if (!file.is_open()) {
-        cerr << "æ— æ³•æ‰“å¼€æ–‡ä»¶" << endl;
+        cerr << "ÎŞ·¨´ò¿ªÎÄ¼ş" << endl;
     }
 
     string line;
@@ -17,43 +17,43 @@ void BlifElaborate::BlifElaborateRead()
         istringstream iss(line);
         string token;
 
-        // è¯»å–ç¬¬ä¸€ä¸ªå•è¯ï¼Œé€šå¸¸æ˜¯æŒ‡ä»¤
+        // ¶ÁÈ¡µÚÒ»¸öµ¥´Ê£¬Í¨³£ÊÇÖ¸Áî
         iss >> token;
         if (token == ".model") {
-            // è¯»å–æ¨¡å‹åç§°ï¼Œè·³è¿‡ç©ºæ ¼
+            // ¶ÁÈ¡Ä£ĞÍÃû³Æ£¬Ìø¹ı¿Õ¸ñ
             std::string model_name;
-            if (iss >> model_name) { // ç¡®ä¿å¯ä»¥è¯»å–æ¨¡å‹åç§°
-                setFileName(model_name); // ä½¿ç”¨è®¾ç½®å‡½æ•°è®¾ç½®æ–‡ä»¶å
+            if (iss >> model_name) { // È·±£¿ÉÒÔ¶ÁÈ¡Ä£ĞÍÃû³Æ
+                setFileName(model_name); // Ê¹ÓÃÉèÖÃº¯ÊıÉèÖÃÎÄ¼şÃû
             }
         }
 
         else if (token == ".inputs") {
-            // è¯»å–è¾“å…¥ç«¯å£
+            // ¶ÁÈ¡ÊäÈë¶Ë¿Ú
             while (iss >> token) {
-                setInput(token); // ä½¿ç”¨è®¾ç½®å‡½æ•°æ·»åŠ è¾“å…¥ç«¯å£
-                setWire(token);// ä½¿ç”¨è®¾ç½®å‡½æ•°æ·»åŠ æ‰€æœ‰ç«¯å£
+                setInput(token); // Ê¹ÓÃÉèÖÃº¯ÊıÌí¼ÓÊäÈë¶Ë¿Ú
+                setWire(token);// Ê¹ÓÃÉèÖÃº¯ÊıÌí¼ÓËùÓĞ¶Ë¿Ú
             }
         }
         else if (token == ".outputs") {
-            // è¯»å–è¾“å‡ºç«¯å£
+            // ¶ÁÈ¡Êä³ö¶Ë¿Ú
             while (iss >> token) {
-                setOutput(token); // ä½¿ç”¨è®¾ç½®å‡½æ•°æ·»åŠ è¾“å‡ºç«¯å£
-                setWire(token);// ä½¿ç”¨è®¾ç½®å‡½æ•°æ·»åŠ æ‰€æœ‰ç«¯å£
+                setOutput(token); // Ê¹ÓÃÉèÖÃº¯ÊıÌí¼ÓÊä³ö¶Ë¿Ú
+                setWire(token);// Ê¹ÓÃÉèÖÃº¯ÊıÌí¼ÓËùÓĞ¶Ë¿Ú
             }
         }
         else if (token == ".names") {
-            BlifWire myBlifWire;//ä¸ºæ¯ä¸ªnameså—è®¾ç½®ä¸€ä¸ªå°è£…çš„æ•°æ®ç»“æ„
+            BlifWire myBlifWire;//ÎªÃ¿¸önames¿éÉèÖÃÒ»¸ö·â×°µÄÊı¾İ½á¹¹
 
-            // ç»§ç»­è§£æ .names è¡Œä¸­çš„ä»¤ç‰Œ
+            // ¼ÌĞø½âÎö .names ĞĞÖĞµÄÁîÅÆ
             while (iss >> token) {
-                setWire(token);// ä½¿ç”¨è®¾ç½®å‡½æ•°æ·»åŠ ç«¯å£ä¸­æ²¡æœ‰çš„ç«¯å£
-                myBlifWire.addHead(token);//è®¾ç½®é‡Œé¢çš„æ‰€æœ‰ç«¯å£
+                setWire(token);// Ê¹ÓÃÉèÖÃº¯ÊıÌí¼Ó¶Ë¿ÚÖĞÃ»ÓĞµÄ¶Ë¿Ú
+                myBlifWire.addHead(token);//ÉèÖÃÀïÃæµÄËùÓĞ¶Ë¿Ú
             }
             string outputName = myBlifWire.getHeadoutput(); 
-            myBlifWire.setOutput(outputName);//è®¾ç½®è¾“å‡ºç«¯å£çš„ç¬¦å·
+            myBlifWire.setOutput(outputName);//ÉèÖÃÊä³ö¶Ë¿ÚµÄ·ûºÅ
             string nexline;
             while (getline(file, nexline) && (isdigit(nexline[0]) || nexline[0] == '-')) {
-                const vector<string>& it = myBlifWire.getHead();//è·å¾—è¡¨å¤´
+                const vector<string>& it = myBlifWire.getHead();//»ñµÃ±íÍ·
                 string expr;
                 bool first = true;
                 for (size_t i = 0; i < it.size(); ++i) {
@@ -71,6 +71,9 @@ void BlifElaborate::BlifElaborateRead()
                 myBlifWire.addLogic(expr);
             }
             myBlifWires.push_back(myBlifWire);
+
+            //´æÈëmap£¬ĞŞ¸ÄÂß¼­£¬
+
             if (!nexline.empty() && !isdigit(nexline[0])) {
                 file.putback('\n');
                 for (auto it = nexline.rbegin(); it != nexline.rend(); ++it) {
@@ -107,7 +110,7 @@ void BlifElaborate::setWire(const string& wireName)
 {
     auto it = find(wire.begin(), wire.end(), wireName);
     if (it == wire.end()) {
-        // å¦‚æœoutputNameä¸åœ¨outputsä¸­ï¼Œæ·»åŠ å®ƒ
+        // Èç¹ûoutputName²»ÔÚoutputsÖĞ£¬Ìí¼ÓËü
         wire.push_back(wireName);
     }
 }
@@ -126,7 +129,7 @@ void BlifElaborate::Blif2Verilog()
 {
     std::ofstream outFile(this->fileName + ".v");
 
-    // å†™å…¥æ–‡ä»¶å
+    // Ğ´ÈëÎÄ¼şÃû
     string fileName = getFileName();
     outFile << "module " << fileName <<"(clk, rst";
     for (const auto& output : output) {
@@ -155,14 +158,14 @@ void BlifElaborate::Blif2Verilog()
         outFile << "assign " << blifWire.getOutput() << " = ";
         const auto& it = blifWire.getLogic();
         for (size_t i = 0; i < it.size(); ++i) {
-            //åˆ¤æ–­å½“å‰è¡Œæ˜¯å¦å­˜åœ¨å¤åˆå—
+            //ÅĞ¶Ïµ±Ç°ĞĞÊÇ·ñ´æÔÚ¸´ºÏ¿é
             bool hasAnd = false;
             for (char ch : it[i]) {
                 if (ch == '&') {
                     hasAnd = true;
                 }
             }
-            //æ‹¬å·
+            //À¨ºÅ
             if (hasAnd && it.size() > 1) {
                 outFile << "(" << it[i] << ")";
             }
@@ -182,23 +185,8 @@ void BlifElaborate::Blif2Verilog()
 
     outFile.close();
 
-    std::cout << "æ•°æ®å·²å†™å…¥åˆ°æ–‡ä»¶ä¸­ã€‚" << std::endl;
+    std::cout << "Êı¾İÒÑĞ´Èëµ½ÎÄ¼şÖĞ¡£" << std::endl;
 
-}
-
-void BlifElaborate::addGateMap(const string& gateName, const BlifGate& myBlifGate)
-{
-    gateMap.insert({ gateName, myBlifGate });
-}
-
-bool BlifElaborate::findGateInMap(const string& gateName)
-{
-    auto it = gateMap.find(gateName); // ä½¿ç”¨ find æ–¹æ³•æ¥æŸ¥æ‰¾é”®
-    if (it != gateMap.end()) {
-        return true;
-    }
-    // å¦‚æœè¿­ä»£å™¨ç­‰äº endï¼Œè¯´æ˜æ²¡æœ‰æ‰¾åˆ°å¯¹åº”çš„é”®
-    return false;
 }
 
 BlifWire::BlifWire()
@@ -240,4 +228,7 @@ const vector<string>& BlifWire::getLogic()
 {
     return logic;
 }
+
+
+
 
