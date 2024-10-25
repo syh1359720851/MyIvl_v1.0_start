@@ -72,6 +72,7 @@ void BlifElaborate::BlifElaborateRead()
             }
             myBlifWires.push_back(myBlifWire);
 
+            //´æÈëmap£¬ÐÞ¸ÄÂß¼­£¬
 
             if (!nexline.empty() && !isdigit(nexline[0])) {
                 file.putback('\n');
