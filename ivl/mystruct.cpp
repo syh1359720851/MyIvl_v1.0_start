@@ -72,7 +72,6 @@ void BlifElaborate::BlifElaborateRead()
             }
             myBlifWires.push_back(myBlifWire);
 
-
             if (!nexline.empty() && !isdigit(nexline[0])) {
                 file.putback('\n');
                 for (auto it = nexline.rbegin(); it != nexline.rend(); ++it) {
@@ -188,6 +187,21 @@ void BlifElaborate::Blif2Verilog()
 
 }
 
+void BlifElaborate::addGateMap(const string& gateName, const BlifGate& myBlifGate)
+{
+    gateMap.insert({ gateName, myBlifGate });
+}
+
+bool BlifElaborate::findGateInMap(const string& gateName)
+{
+    auto it = gateMap.find(gateName); // 使用 find 方法来查找键
+    if (it != gateMap.end()) {
+        return true;
+    }
+    // 如果迭代器等于 end，说明没有找到对应的键
+    return false;
+}
+
 BlifWire::BlifWire()
 {
 }
@@ -227,7 +241,4 @@ const vector<string>& BlifWire::getLogic()
 {
     return logic;
 }
-
-
-
 
