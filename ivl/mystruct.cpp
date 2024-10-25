@@ -49,7 +49,7 @@ void BlifElaborate::BlifElaborateRead()
                 setWire(token);// 使用设置函数添加端口中没有的端口
                 myBlifWire.addHead(token);//设置里面的所有端口
             }
-            string outputName = myBlifWire.getHeadoutput(); 
+            string outputName = myBlifWire.getHeadoutput();
             myBlifWire.setOutput(outputName);//设置输出端口的符号
             string nexline;
             while (getline(file, nexline) && (isdigit(nexline[0]) || nexline[0] == '-')) {
@@ -71,8 +71,6 @@ void BlifElaborate::BlifElaborateRead()
                 myBlifWire.addLogic(expr);
             }
             myBlifWires.push_back(myBlifWire);
-
-            //存入map，修改逻辑，
 
             if (!nexline.empty() && !isdigit(nexline[0])) {
                 file.putback('\n');
@@ -131,7 +129,7 @@ void BlifElaborate::Blif2Verilog()
 
     // 写入文件名
     string fileName = getFileName();
-    outFile << "module " << fileName <<"(clk, rst";
+    outFile << "module " << fileName << "(clk, rst";
     for (const auto& output : output) {
         outFile << "," << output;
     }
@@ -139,13 +137,13 @@ void BlifElaborate::Blif2Verilog()
         outFile << "," << input;
     }
 
-    outFile << ");"<< endl;
+    outFile << ");" << endl;
     outFile << "input clk,rst;" << endl;
     for (const auto& output : output) {
         outFile << "output " << output << ";" << endl;
     }
     for (const auto& input : input) {
-        outFile << "input  "<<input << ";" << endl;
+        outFile << "input  " << input << ";" << endl;
     }
     outFile << endl;
 
@@ -181,12 +179,27 @@ void BlifElaborate::Blif2Verilog()
 
     outFile << endl;
 
-    outFile << "endmodule"<< endl;
+    outFile << "endmodule" << endl;
 
     outFile.close();
 
     std::cout << "数据已写入到文件中。" << std::endl;
 
+}
+
+void BlifElaborate::addGateMap(const string& gateName, const BlifGate& myBlifGate)
+{
+    gateMap.insert({ gateName, myBlifGate });
+}
+
+bool BlifElaborate::findGateInMap(const string& gateName)
+{
+    auto it = gateMap.find(gateName); // 使用 find 方法来查找键
+    if (it != gateMap.end()) {
+        return true;
+    }
+    // 如果迭代器等于 end，说明没有找到对应的键
+    return false;
 }
 
 BlifWire::BlifWire()
@@ -228,7 +241,3 @@ const vector<string>& BlifWire::getLogic()
 {
     return logic;
 }
-
-
-
-
