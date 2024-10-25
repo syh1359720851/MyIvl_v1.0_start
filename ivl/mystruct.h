@@ -7,13 +7,29 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include<unordered_map>
 
+class BlifGate;
 class BlifWire;
 class BlifElaborate;
 
 
 using namespace std;
 
+class BlifGate
+{
+public:
+    BlifGate();
+    ~BlifGate();
+    void setGateInpus(const string& s) { GateInputs.push_back(s); } //创建端口名称
+private:
+    vector<string> GateInputs; //该端口拥有的所有输入端口
+    enum GateType {
+        AND,
+        OR, 
+        NOT
+    } GateType; //该端口输入的类型
+};
 
 class BlifWire
 {
@@ -49,6 +65,8 @@ public:
     void BlifElaborateRead();  // 解析
     void Blif2Verilog();   //输出
 
+    void addGateMap(const string& gateName, const BlifGate& myBlifGate); //将排列好的gate名和其所拥有的输入和type进行添加到MAP
+    bool findGateInMap(const string& gateName); //从哈希表中找到该gate
 private:
     string fileName; //该blif文件名称
     vector<BlifWire> myBlifWires;//存储所有的连接关系的数据结构
@@ -56,6 +74,7 @@ private:
     vector<string> input; //blif中的输入端口
     vector<string> wire; //blif中的端口
     ifstream file;
+    unordered_map<string, BlifGate> gateMap;//该Blif的哈希表
 };
 
 class mystruct
