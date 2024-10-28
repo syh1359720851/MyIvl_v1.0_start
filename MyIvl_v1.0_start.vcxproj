@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ivl\BlifElaborate.h" />
+    <ClInclude Include="Scheduling.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ivl\main.cc" />
     <ClCompile Include="ivl\BlifElaborate.cpp" />
+    <ClCompile Include="Scheduling.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sample.v" />
