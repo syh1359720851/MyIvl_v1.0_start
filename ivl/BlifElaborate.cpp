@@ -30,6 +30,9 @@ void BlifElaborate::BlifElaborateRead()
         else if (token == ".inputs") {
             // 读取输入端口
             while (iss >> token) {
+                BlifGate* input = new BlifGate();
+                input->setGateType(BlifGate::Input);
+                addGateMap(token, input);
                 setInput(token); // 使用设置函数添加输入端口
                 setWire(token);// 使用设置函数添加所有端口
             }
@@ -49,6 +52,7 @@ void BlifElaborate::BlifElaborateRead()
                 setWire(token);// 使用设置函数添加端口中没有的端口
                 myBlifWire.addHead(token);//设置里面的所有端口
             }
+            BlifGate* nodeGate = new BlifGate();
             string outputName = myBlifWire.getHeadoutput();
             myBlifWire.setOutput(outputName);//设置输出端口的符号
             string nexline;
@@ -71,6 +75,29 @@ void BlifElaborate::BlifElaborateRead()
                 myBlifWire.addLogic(expr);
             }
             myBlifWires.push_back(myBlifWire);
+
+            //为输出端口建立nodeGate
+            auto itLogic = myBlifWire.getLogic();
+            if (itLogic.size() == 1) {
+                for (auto it : itLogic) {
+                    nodeGate->setGateType(BlifGate::AND);
+                    for (char ch : it) {
+                        if (islower(ch)) {
+                            string str;
+                            str.push_back(ch); // 将字符添加到字符串 str 的末尾
+                            nodeGate->setGateInpus(str);
+                        }
+                        if (ch == '!') { nodeGate->setGateType(BlifGate::NOT); }
+                    }
+                }
+            }
+            else {
+                nodeGate->setGateType(BlifGate::OR);
+                for (auto it : itLogic) {
+                    nodeGate->setGateInpus(it);
+                }
+            }
+            addGateMap(outputName, nodeGate);
 
             if (!nexline.empty() && !isdigit(nexline[0])) {
                 file.putback('\n');
@@ -187,7 +214,7 @@ void BlifElaborate::Blif2Verilog()
 
 }
 
-void BlifElaborate::addGateMap(const string& gateName, const BlifGate& myBlifGate)
+void BlifElaborate::addGateMap(const string& gateName,BlifGate* myBlifGate)
 {
     gateMap.insert({ gateName, myBlifGate });
 }
