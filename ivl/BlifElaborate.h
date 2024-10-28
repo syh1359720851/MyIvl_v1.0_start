@@ -7,7 +7,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include<unordered_map>
+#include <unordered_map>
 
 class BlifGate;
 class BlifWire;
@@ -74,7 +74,7 @@ private:
     vector<string> input; //blif中的输入端口
     vector<string> wire; //blif中的端口
     ifstream file;
-    unordered_map<string, BlifGate> gateMap;//该Blif的哈希表
+    unordered_map<string, BlifGate> gateMap; //该Blif的哈希表
 };
 
 class mystruct

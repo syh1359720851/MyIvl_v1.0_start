@@ -1,4 +1,4 @@
-#include"mystruct.h"
+#include "BlifElaborate.h"
 
 BlifElaborate::BlifElaborate()
 {
@@ -240,4 +240,14 @@ string BlifWire::getHeadoutput()
 const vector<string>& BlifWire::getLogic()
 {
     return logic;
+}
+
+BlifGate::BlifGate()
+{
+
+}
+
+BlifGate::~BlifGate()
+{
+
 }
