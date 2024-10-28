@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 #include <unordered_map>
+#include <cctype> // 用于 std::islower 和 std::tolower
 
 class BlifGate;
 class BlifWire;
@@ -21,14 +22,18 @@ class BlifGate
 public:
     BlifGate();
     ~BlifGate();
-    void setGateInpus(const string& s) { GateInputs.push_back(s); } //创建端口名称
-private:
-    vector<string> GateInputs; //该端口拥有的所有输入端口
     enum GateType {
         AND,
         OR,
-        NOT
-    } GateType; //该端口输入的类型
+        NOT,
+        Input
+    }; //该端口输入的类型
+
+    void setGateInpus(const string& s) { GateInputs.push_back(s); } //创建端口名称
+    void setGateType(GateType type) { myGateType = type; } // 设置端口类型
+private:
+    vector<string> GateInputs; //该端口拥有的所有输入端口
+    GateType myGateType; //该端口输入的类型
 };
 
 class BlifWire
@@ -65,7 +70,7 @@ public:
     void BlifElaborateRead();  // 解析
     void Blif2Verilog();   //输出
 
-    void addGateMap(const string& gateName, const BlifGate& myBlifGate); //将排列好的gate名和其所拥有的输入和type进行添加到MAP
+    void addGateMap(const string& gateName, BlifGate* myBlifGate); //将排列好的gate名和其所拥有的输入和type进行添加到MAP
     bool findGateInMap(const string& gateName); //从哈希表中找到该gate
 private:
     string fileName; //该blif文件名称
@@ -74,11 +79,8 @@ private:
     vector<string> input; //blif中的输入端口
     vector<string> wire; //blif中的端口
     ifstream file;
-    unordered_map<string, BlifGate> gateMap; //该Blif的哈希表
+    unordered_map<string, BlifGate*> gateMap; //该Blif的哈希表
 };
 
-class mystruct
-{
-};
 
 #endif // !MYSTRUCT_H
