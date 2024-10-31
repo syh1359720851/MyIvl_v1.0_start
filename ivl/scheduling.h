@@ -1,41 +1,55 @@
 #pragma once
+#include "BlifElaborate.h"
+#include <queue>
 
-#include <string>
-#include <vector>
-#include <memory>
-
-#include "Module.h"
-
-using namespace std;
-
-struct AssignmentTreeNode {  // 需要一个完善AssignmentTreeNode的接口，以及维护该文件对应的.c文件
+class Res {
 public:
+	Res() : state(0), cycle(0), working(nullptr) {};
+	virtual ~Res();
 
+	bool Start(BlifGate* gate);
+	bool isFree();
+	void Run1cycle();
+	virtual BlifGate* isDone() = 0;
+protected:
+	int getCycle() const;
+	void ResetCycle();
+	BlifGate* getGate();
+	
 private:
-	enum GateType
-	{
-		AND = 0,
-		OR,
-		NOT
-	};
-	int gateType;
-	bool endNode;  // 是否为端点
-	vector<string> inputs;  // 输入列表
-	string output;  // node
-	vector<shared_ptr<AssignmentTreeNode>> forwardNodes;  // 前驱节点
-	vector<shared_ptr<AssignmentTreeNode>> backNodes;  // 后续节点
+	BlifGate* working;
+	int state; // 0: free; 1: busy
+	int cycle;
+
 };
 
+class AndGate : public Res {
+public:
+	virtual BlifGate* isDone();
+};
+
+class OrGate : public Res {
+public:
+	virtual BlifGate* isDone();
+};
+
+class NotGate : public Res {
+public:
+	virtual BlifGate* isDone();
+};
 
 class Scheduling {
-	shared_ptr<AssignmentTreeNode> beginNode;  // beginNode 连接所有首个计算的节点
-	shared_ptr<AssignmentTreeNode> endNode;  // endNode 连接所有最后计算的节点
+private:
+	const unordered_map<string, BlifGate*> gateMap;
+	const vector<string> inputGates;
+	const vector<string> outputGates;
 public:
-	void BuildTree(Module* mod, BlifElaborate& myBlif) {  // one for this func
+	Scheduling();
+	Scheduling(const BlifElaborate& blifElaborate);
 
-	}
-	void ASAP();  // one for this func
-	void ALAP();  // and one for this func
+	void ASAP();
+	void ALAP();
+	void ML_RCS(int And, int Or, int Not);
+	void MR_LCS(int cycle);
+
 };
-
-// syh_remote change 1

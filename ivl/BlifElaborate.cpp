@@ -30,9 +30,9 @@ void BlifElaborate::BlifElaborateRead()
         else if (token == ".inputs") {
             // 读取输入端口
             while (iss >> token) {
-                BlifGate* input = new BlifGate();
-                input->setGateType(BlifGate::Input);
-                addGateMap(token, input);
+//                 BlifGate* input = new BlifGate();
+//                 input->setGateType(BlifGate::Input);
+//                 addGateMap(token, input);
                 setInput(token); // 使用设置函数添加输入端口
                 setWire(token);// 使用设置函数添加所有端口
             }
@@ -116,7 +116,7 @@ void BlifElaborate::setFileName(const string& filename)
     fileName = filename;
 }
 
-string BlifElaborate::getFileName()
+string BlifElaborate::getFileName() const
 {
     return fileName;
 }
@@ -263,6 +263,11 @@ bool BlifElaborate::findGateInMap(const string& gateName)
     return false;
 }
 
+std::unordered_map<std::string, BlifGate*> BlifElaborate::GetMap() const
+{
+    return gateMap;
+}
+
 BlifWire::BlifWire()
 {
 }
@@ -311,6 +316,14 @@ BlifGate::BlifGate()
 BlifGate::~BlifGate()
 {
 
+}
+
+bool BlifGate::deleteGate(const string& s)
+{
+    auto it = find(GateInputs.begin(), GateInputs.end(), s);
+    if (it == GateInputs.end()) return false;
+    GateInputs.erase(it);
+    return true;
 }
 
 void BlifGate::setGateinputs(const vector<string>& vec)
