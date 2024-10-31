@@ -29,8 +29,10 @@ public:
         Input
     }; //该端口输入的类型
 
-    void setGateInpus(const string& s) { GateInputs.push_back(s); } //创建端口名称
+    void setGateinputs(const string& s) { GateInputs.push_back(s); } //创建端口名称
+    void setGateinputs(const vector<string>& vec);
     void setGateType(GateType type) { myGateType = type; } // 设置端口类型
+    vector<string> getGateInputs(); 
 private:
     vector<string> GateInputs; //该端口拥有的所有输入端口
     GateType myGateType; //该端口输入的类型

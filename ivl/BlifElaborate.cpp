@@ -85,7 +85,7 @@ void BlifElaborate::BlifElaborateRead()
                         if (islower(ch)) {
                             string str;
                             str.push_back(ch); // 将字符添加到字符串 str 的末尾
-                            nodeGate->setGateInpus(str);
+                            nodeGate->setGateinputs(str);
                         }
                         if (ch == '!') { nodeGate->setGateType(BlifGate::NOT); }
                     }
@@ -94,7 +94,7 @@ void BlifElaborate::BlifElaborateRead()
             else {
                 nodeGate->setGateType(BlifGate::OR);
                 for (auto it : itLogic) {
-                    nodeGate->setGateInpus(it);
+                    nodeGate->setGateinputs(it);
                 }
             }
             addGateMap(outputName, nodeGate);
@@ -216,6 +216,40 @@ void BlifElaborate::Blif2Verilog()
 
 void BlifElaborate::addGateMap(const string& gateName,BlifGate* myBlifGate)
 {
+    vector<string> inputs = myBlifGate->getGateInputs();
+    for (string input : inputs) {
+        // 假设input: "a & !c"
+        istringstream iss(input);
+        string token;
+        vector<string> tokens;
+        BlifGate* andGate = nullptr;
+
+        while (getline(iss, token, ' '))
+        {
+            if (token == "&") {
+                // 如果中间还有&的连接关系，则新建连接关系
+                andGate = new BlifGate;
+                andGate->setGateType(BlifGate::AND);
+            }
+            else if (token[0] == '!') {
+                // 如果该字符串以!开头，则新建连接关系
+                BlifGate* notGate = new BlifGate;
+                notGate->setGateinputs(string(1, token[1]));
+                notGate->setGateType(BlifGate::NOT);
+                gateMap.insert({token, notGate});
+                tokens.push_back(token);
+            }
+            else tokens.push_back(token);
+            // 第一次循环tokens{a}
+            // 第二次循环新建andGate
+            // 第三次循环新建了!c->c,!的连接关系
+                // 同时将!c 放入token
+        }
+		if (andGate != nullptr) {
+			andGate->setGateinputs(tokens);
+			gateMap.insert({ input, andGate });
+		}
+    }
     gateMap.insert({ gateName, myBlifGate });
 }
 
@@ -277,4 +311,14 @@ BlifGate::BlifGate()
 BlifGate::~BlifGate()
 {
 
+}
+
+void BlifGate::setGateinputs(const vector<string>& vec)
+{
+    copy(vec.begin(), vec.end(), back_inserter(GateInputs));
+}
+
+std::vector<std::string> BlifGate::getGateInputs()
+{
+    return GateInputs;
 }
