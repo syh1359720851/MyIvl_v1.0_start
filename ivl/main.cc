@@ -6,6 +6,7 @@
 # include  <cstdlib>
 
 # include "BlifElaborate.h"
+# include "scheduling.h"
 
 int main(int argc, char* argv[])
 {
@@ -15,5 +16,8 @@ int main(int argc, char* argv[])
 	myBlif.BlifElaborateRead();
 	myBlif.Blif2Verilog();
 
+	// Scheduling
+	Scheduling scheduling(myBlif);
+	scheduling.ASAP();
 	return 0;
 }

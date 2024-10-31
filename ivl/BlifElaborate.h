@@ -28,7 +28,7 @@ public:
         NOT,
         Input
     }; //该端口输入的类型
-
+    bool deleteGate(const string& s);
     void setGateinputs(const string& s) { GateInputs.push_back(s); } //创建端口名称
     void setGateinputs(const vector<string>& vec);
     void setGateType(GateType type) { myGateType = type; } // 设置端口类型
@@ -63,7 +63,7 @@ class BlifElaborate
 public:
     BlifElaborate();
     void setFileName(const string& filename);
-    string getFileName();
+    string getFileName() const;
     void setInput(const string& inputName);
     void setOutput(const string& outputName);
     void setWire(const string& wireName);
@@ -74,6 +74,7 @@ public:
 
     void addGateMap(const string& gateName, BlifGate* myBlifGate); //将排列好的gate名和其所拥有的输入和type进行添加到MAP
     bool findGateInMap(const string& gateName); //从哈希表中找到该gate
+    unordered_map<string, BlifGate*> GetMap() const;
 private:
     string fileName; //该blif文件名称
     vector<BlifWire> myBlifWires;//存储所有的连接关系的数据结构
