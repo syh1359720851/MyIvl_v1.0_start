@@ -19,5 +19,6 @@ int main(int argc, char* argv[])
 	// Scheduling
 	Scheduling scheduling(myBlif);
 	scheduling.ASAP();
+	scheduling.ALAP();
 	return 0;
 }

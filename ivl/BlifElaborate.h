@@ -33,6 +33,7 @@ public:
     void setGateinputs(const vector<string>& vec);
     void setGateType(GateType type) { myGateType = type; } // 设置端口类型
     vector<string> getGateInputs(); 
+    GateType getGateType() const;
 private:
     vector<string> GateInputs; //该端口拥有的所有输入端口
     GateType myGateType; //该端口输入的类型

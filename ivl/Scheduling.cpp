@@ -95,7 +95,12 @@ Scheduling::Scheduling(const BlifElaborate& blifElaborate) :
 }
 
 void Scheduling::ASAP() {
-	unordered_map<string, BlifGate*> ASAPgateMap(gateMap);
+	unordered_map<string, BlifGate*> ASAPgateMap;
+	for (auto it = gateMap.begin(); it != gateMap.end(); it++) {
+		ASAPgateMap[it->first] = new BlifGate;
+		ASAPgateMap[it->first]->setGateinputs(it->second->getGateInputs());
+		ASAPgateMap[it->first]->setGateType(it->second->getGateType());
+	}
 	queue<string> ready; // 就绪队列
 	vector<vector<string>> gate_of_cycle; // 二维数组，行是cycle数
 	// 首先将所有的input放入就绪队列中
@@ -133,11 +138,13 @@ void Scheduling::ASAP() {
 		gate_of_cycle.push_back(currCycle);
 	}
 
-	// 打印
-	//for ()
-	//for (const auto& vec : gate_of_cycle) {
-	//	cout << 
-	//}
+	for (size_t cycle = 0; cycle < gate_of_cycle.size(); ++cycle) {
+		cout << "Cycle " << cycle << ": ";
+		for (const string& gate : gate_of_cycle[cycle]) {
+			cout << gate << " ";
+		}
+		cout << endl;
+	}
 }
 
 
@@ -173,10 +180,12 @@ void Scheduling::ALAP()
 			// 如果是input，则不加
 			auto inputs = gateMap.find(currgate)->second->getGateInputs();
 			for (auto it = inputs.begin(); it != inputs.end(); it++) {
-				if (!visitedMap.find(*it)->second || find(inputGates.begin(), inputGates.end(), *it) != inputGates.end()) {
+				if (find(inputGates.begin(), inputGates.end(), *it) == inputGates.end() && !visitedMap.find(*it)->second) {
 					// 未加入过，且未找到
 					toReady.push(*it);
-					currCycle.push_back(currgate);
+					currCycle.push_back(*it);
+					visitedMap[*it] = true;
+
 				}
 				
 			}
