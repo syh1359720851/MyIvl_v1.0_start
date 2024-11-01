@@ -1,4 +1,5 @@
 #include "Scheduling.h"
+#include <deque>
 
 using namespace std;
 Res::~Res()
@@ -142,12 +143,54 @@ void Scheduling::ASAP() {
 
 void Scheduling::ALAP()
 {
+	// 初始化visitedMap
+	typedef bool isVisited;
+	unordered_map<string, isVisited> visitedMap;
+	for (auto it = gateMap.begin(); it != gateMap.end(); it++) {
+		visitedMap[it->first] = 0; // 代表还没有加入过
+	}
+	// 初始化队列
+	queue<string> toReady;
+	for (const string& output : outputGates) {
+		toReady.push(output);
+	}
+	
+	// 双端队列存储结果，因为需要用到push_front
+	deque<vector<string>> gate_of_cycle;
+	
+	int n = toReady.size();
+	while (!toReady.empty()) {
+		// 外循环，对应每个cycle
+		int n = toReady.size();
+		vector<string> currCycle;
+		for (int i = 0; i < n; i++) {
+			// 内循环，对应每个cycle中遍历toReady
+			string currgate = toReady.front();
+			toReady.pop();
 
+			// 将右侧的value中的所有gate都加入到待就绪队列中
+			// 如果已经加入过，则不加
+			// 如果是input，则不加
+			auto inputs = gateMap.find(currgate)->second->getGateInputs();
+			for (auto it = inputs.begin(); it != inputs.end(); it++) {
+				if (!visitedMap.find(*it)->second || find(inputGates.begin(), inputGates.end(), *it) != inputGates.end()) {
+					// 未加入过，且未找到
+					toReady.push(*it);
+					currCycle.push_back(currgate);
+				}
+				
+			}
+		}
+		// 将该cycle放入最终结果
+		gate_of_cycle.push_front(currCycle);
+
+		// 打印
+	}
 }
 
 void Scheduling::ML_RCS(int And, int Or, int Not)
 {
-
+	
 }
 
 void Scheduling::MR_LCS(int cycle)
