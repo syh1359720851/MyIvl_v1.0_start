@@ -29,7 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="sample.v" />
+    <None Include="sample1.blif" />
     <None Include="test1.blif" />
+    <None Include="testEz.blif" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

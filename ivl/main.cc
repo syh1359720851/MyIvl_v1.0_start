@@ -20,5 +20,8 @@ int main(int argc, char* argv[])
 	Scheduling scheduling(myBlif);
 	scheduling.ASAP();
 	scheduling.ALAP();
+	int number;
+	cin >> number;
+	scheduling.MR_LCS(number);
 	return 0;
 }
