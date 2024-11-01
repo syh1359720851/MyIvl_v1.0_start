@@ -28,6 +28,7 @@ public:
         NOT,
         Input
     }; //该端口输入的类型
+    GateType getGateType();
     bool deleteGate(const string& s);
     void setGateinputs(const string& s) { GateInputs.push_back(s); } //创建端口名称
     void setGateinputs(const vector<string>& vec);

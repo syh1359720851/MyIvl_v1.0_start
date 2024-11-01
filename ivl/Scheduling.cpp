@@ -10,16 +10,17 @@ Res::~Res()
 void Res::ResetCycle()
 {
 	cycle = 0;
+	working = " ";
 }
 
-BlifGate* Res::getGate()
+string Res::getGate()
 {
 	return working;
 }
 	
-bool Res::Start(BlifGate* gate)
+bool Res::Start(string gate)
 {
-	if (working != nullptr) {
+	if (working != " ") {
 		return false;
 	}
 	working = gate;
@@ -28,7 +29,7 @@ bool Res::Start(BlifGate* gate)
 
 bool Res::isFree()
 {
-	if (working != nullptr) {
+	if (working != " ") {
 		return false;
 	}
 	else return true;
@@ -43,43 +44,6 @@ int Res::getCycle() const
 {
 	return this->cycle;
 }
-
-BlifGate* AndGate::isDone()
-{
-	BlifGate* gate = Res::getGate();
-	if (Res::getCycle() == 2) {
-		return gate;
-		Res::ResetCycle();
-	}
-	else {
-		return nullptr;
-	}
-}
-
-BlifGate* OrGate::isDone()
-{
-	BlifGate* gate = Res::getGate();
-	if (Res::getCycle() == 3) {
-		return gate;
-		Res::ResetCycle();
-	}
-	else {
-		return nullptr;
-	}
-}
-
-BlifGate* NotGate::isDone()
-{
-	BlifGate* gate = Res::getGate();
-	if (Res::getCycle() == 1) {
-		return gate;
-		Res::ResetCycle();
-	}
-	else {
-		return nullptr;
-	}
-}
-
 
 Scheduling::Scheduling()
 {
@@ -230,7 +194,6 @@ void Scheduling::ALAP()
 	// 双端队列存储结果，因为需要用到push_front
 	deque<vector<string>> gate_of_cycle;
 	
-	int n = toReady.size();
 	while (!toReady.empty()) {
 		// 外循环，对应每个cycle
 		int n = toReady.size();
@@ -335,10 +298,184 @@ void Scheduling::ALAP()
 
 void Scheduling::ML_RCS(int And, int Or, int Not)
 {
+	// 新建map
+	unordered_map<string, BlifGate*> MLgateMap;
+	for (auto it = gateMap.begin(); it != gateMap.end(); it++) {
+		MLgateMap[it->first] = new BlifGate;
+		MLgateMap[it->first]->setGateinputs(it->second->getGateInputs());
+		MLgateMap[it->first]->setGateType(it->second->getGateType());
+	}
+
+	// 初始化ResManage
+	ResManage resManage(And, Or, Not);
+
+	// 二维数组储存结果
+	vector<vector<string>> gate_of_cycle;
+
+	// 用一个队列储存已经完成的门 
+	queue<string> finished;
+	
+	while (!resManage.allFree() && !finished.empty()) {
+		// 每轮
+		vector<string> currCycle;
+		// 搜索就绪的门，加入就绪队列中
+		while (!finished.empty()) {
+			string currgate = finished.front();
+			finished.pop();
+			auto it = MLgateMap.begin();
+			for (it; it != MLgateMap.end(); ) {
+				// 遍历所有value，如果有当前的wire，则删掉
+				it->second->deleteGate(currgate);
+				// 如果该节点的前序节点已经全部就绪，则加入就绪队列
+				if (it->second->getGateInputs().size() == 0) {
+					switch (it->second->getGateType())
+					{
+					case BlifGate::AND :
+						resManage.andReady.push(it->first);
+						break;
+					case BlifGate::OR:
+						resManage.orReady.push(it->first);
+						break;
+					case BlifGate::NOT:
+						resManage.notReady.push(it->first);
+						break;
+					default:
+						break;
+					}
+					// 在表中删除该节点，防止第二遍循环时再次发现value是0，再次加入vector中
+					it = MLgateMap.erase(it);
+				}
+				else {
+					++it;
+				}
+			}
+
+		}
+		
+		// 运行一个cycle
+		currCycle = resManage.run1cycle();
+		
+		// 将当前轮的vector加入到总的vector中
+		gate_of_cycle.push_back(currCycle);
+	}
+
+		// 打印
 	
 }
 
 void Scheduling::MR_LCS(int cycle)
 {
+	// 根据ASAP确定最多的gate数量
+	// 减小一个gate看看能不能运行
+	//
+}
 
+int ResManage::andBusyAmount()
+{
+	int count = andGate.size();
+	for (auto& gate : andGate) {
+		if (!gate.isFree()) {
+			count--;
+		}
+	}
+	return count;
+}
+
+int ResManage::orBusyAmount()
+{
+	int count = orGate.size();
+	for (auto& gate : orGate) {
+		if (!gate.isFree()) {
+			count--;
+		}
+	}
+	return count;
+}
+
+int ResManage::notBusyAmount()
+{
+	int count = notGate.size();
+	for (auto& gate : notGate) {
+		if (!gate.isFree()) {
+			count--;
+		}
+	}
+	return count;
+}
+
+int ResManage::andFreePos()
+{
+	for (int i = 0; i < andGate.size(); i++) {
+		if (andGate[i].isFree()) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+int ResManage::orFreePos()
+{
+	for (int i = 0; i < orGate.size(); i++) {
+		if (orGate[i].isFree()) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+int ResManage::notFreePos()
+{
+	for (int i = 0; i < notGate.size(); i++) {
+		if (notGate[i].isFree()) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+bool ResManage::allFree() // return 1 表示全都free
+{
+	return !(andBusyAmount() && orBusyAmount() && notBusyAmount());
+}
+
+std::vector<std::string> ResManage::run1cycle() // 返回该轮已经完成的gate
+{	
+	vector<string> result;
+	// 如果有空位，将就绪队列中的放入执行
+	while (int i = andFreePos() != -1 && !andReady.empty()) {
+		andGate[i].Start(andReady.front());
+		andReady.pop();
+	}
+	while (int i = orFreePos() != -1 && !orReady.empty()) {
+		orGate[i].Start(andReady.front());
+		orReady.pop();
+	}
+	while (int i = notFreePos() != -1 && !notReady.empty()) {
+		notGate[i].Start(notReady.front());
+		notReady.pop();
+	}
+
+	// 执行
+	for (auto& gate : andGate) {
+		gate.Run1cycle();
+		if (gate.getCycle() == 2) {
+			result.push_back(gate.getGate());
+			gate.ResetCycle();
+		}
+	}
+	for (auto& gate : orGate) {
+		gate.Run1cycle();
+		if (gate.getCycle() == 3) {
+			result.push_back(gate.getGate());
+			gate.ResetCycle();
+		}
+	}
+	for (auto& gate : notGate) {
+		gate.Run1cycle();
+		if (gate.getCycle() == 1) {
+			result.push_back(gate.getGate());
+			gate.ResetCycle();
+		}
+	}
+	return result;
 }

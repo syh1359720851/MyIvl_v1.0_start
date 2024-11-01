@@ -318,6 +318,11 @@ BlifGate::~BlifGate()
 
 }
 
+BlifGate::GateType BlifGate::getGateType()
+{
+    return myGateType;
+}
+
 bool BlifGate::deleteGate(const string& s)
 {
     auto it = find(GateInputs.begin(), GateInputs.end(), s);
