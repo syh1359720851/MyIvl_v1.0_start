@@ -6,7 +6,7 @@ BlifElaborate::BlifElaborate()
 
 void BlifElaborate::BlifElaborateRead()
 {
-    ifstream file("C:\\Users\\86198\\Desktop\\测试样例\\sample1.blif"); // 替换为你的文件路径
+    ifstream file("C:\\Users\\86198\\Desktop\\测试样例\\sample2.blif"); // 替换为你的文件路径
     if (!file.is_open()) {
         cerr << "无法打开文件" << endl;
     }

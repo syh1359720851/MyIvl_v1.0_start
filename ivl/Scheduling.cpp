@@ -138,14 +138,79 @@ void Scheduling::ASAP() {
 		gate_of_cycle.push_back(currCycle);
 	}
 
-	for (size_t cycle = 0; cycle < gate_of_cycle.size(); ++cycle) {
+	cout << "Inputs: ";
+	for (const string& input : inputGates) {
+		cout << input << " ";
+	}
+	cout << endl;
+
+	// 输出 outputs
+	cout << "Outputs: ";
+	for (const string& output : outputGates) {
+		cout << output << " ";
+	}
+	cout << endl;
+
+	// 输出每一轮的 gates
+	for (size_t cycle = 1; cycle < gate_of_cycle.size()-1; ++cycle) {
 		cout << "Cycle " << cycle << ": ";
+
+		// 创建三个 vector 来分类存储 AND, OR, NOT 门
+		vector<string> andGates, orGates, notGates;
+
 		for (const string& gate : gate_of_cycle[cycle]) {
-			cout << gate << " ";
+			// 从 gateMap 中查找 gate 的类型
+
+			if (gateMap.find(gate) != gateMap.end()) {
+				auto it = gateMap.find(gate);
+				BlifGate::GateType gateType = it->second->getGateType();
+
+				// 使用 switch 语句来处理不同的 GateType
+				switch (gateType) {
+				case BlifGate::GateType::AND:
+					andGates.push_back(gate);
+					break;
+				case BlifGate::GateType::OR:
+					orGates.push_back(gate);
+					break;
+				case BlifGate::GateType::NOT:
+					notGates.push_back(gate);
+					break;
+				default:
+					break;
+				}
+			}
 		}
+
+		// 按顺序输出 AND, OR, NOT 门，使用 {} 分割
+		auto printGates = [](const vector<string>& gates) {
+			if (gates.empty()) {
+				std::cout << "{} ";
+			}
+			else {
+				std::cout << "{";
+				for (size_t i = 0; i < gates.size(); ++i) {
+					std::cout << gates[i];
+					if (i < gates.size() - 1) { // 不在最后一个元素后添加逗号
+						std::cout << ", ";
+					}
+				}
+				std::cout << "} ";
+			}
+			};
+
+
+		printGates(andGates);
+		printGates(orGates);
+		printGates(notGates);
+
 		cout << endl;
 	}
+	std::cout << "Total  " << (gate_of_cycle.size() - 2) << "  Cycles";
+	cout << endl;
+
 }
+
 
 
 void Scheduling::ALAP()
@@ -192,10 +257,81 @@ void Scheduling::ALAP()
 		}
 		// 将该cycle放入最终结果
 		gate_of_cycle.push_front(currCycle);
-
-		// 打印
 	}
+		gate_of_cycle.push_back(outputGates);
+	cout << "Inputs: ";
+	for (const string& input : inputGates) {
+		cout << input << " ";
+	}
+	cout << endl;
+
+	// 输出 outputs
+	cout << "Outputs: ";
+	for (const string& output : outputGates) {
+		cout << output << " ";
+	}
+	cout << endl;
+
+	// 输出每一轮的 gates
+	for (size_t cycle =1; cycle < gate_of_cycle.size(); ++cycle) {
+		cout << "Cycle " << cycle << ": ";
+
+		// 创建三个 vector 来分类存储 AND, OR, NOT 门
+		vector<string> andGates, orGates, notGates;
+
+		for (const string& gate : gate_of_cycle[cycle]) {
+			// 从 gateMap 中查找 gate 的类型
+
+			if (gateMap.find(gate) != gateMap.end()) {
+				auto it = gateMap.find(gate);
+				BlifGate::GateType gateType = it->second->getGateType();
+
+				// 使用 switch 语句来处理不同的 GateType
+				switch (gateType) {
+				case BlifGate::GateType::AND:
+					andGates.push_back(gate);
+					break;
+				case BlifGate::GateType::OR:
+					orGates.push_back(gate);
+					break;
+				case BlifGate::GateType::NOT:
+					notGates.push_back(gate);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+		// 按顺序输出 AND, OR, NOT 门，使用 {} 分割
+		auto printGates = [](const vector<string>& gates) {
+			if (gates.empty()) {
+				std::cout << "{} ";
+			}
+			else {
+				std::cout << "{";
+				for (size_t i = 0; i < gates.size(); ++i) {
+					std::cout << gates[i];
+					if (i < gates.size() - 1) { // 不在最后一个元素后添加逗号
+						std::cout << ", ";
+					}
+				}
+				std::cout << "} ";
+			}
+			};
+
+
+		printGates(andGates);
+		printGates(orGates);
+		printGates(notGates);
+
+		cout << endl;
+	}
+	std::cout << "Total  " << (gate_of_cycle.size() - 1) << "  Cycles";
+	cout << endl;
+
 }
+
 
 void Scheduling::ML_RCS(int And, int Or, int Not)
 {
