@@ -7,35 +7,43 @@ public:
 	Res() : state(0), cycle(0), working(nullptr) {};
 	virtual ~Res();
 
-	bool Start(BlifGate* gate);
+	bool Start(string gate);
 	bool isFree();
 	void Run1cycle();
-	virtual BlifGate* isDone() = 0;
-protected:
 	int getCycle() const;
 	void ResetCycle();
-	BlifGate* getGate();
+	string getGate();
 	
 private:
-	BlifGate* working;
+	string working;
 	int state; // 0: free; 1: busy
 	int cycle;
 
 };
 
-class AndGate : public Res {
+class ResManage {
 public:
-	virtual BlifGate* isDone();
-};
+	ResManage(int And, int Or, int Not) {
+		vector<Res> andGate(And);
+		vector<Res> orGate(Or);
+		vector<Res> notGate(Not);
+	}
+	int andBusyAmount();
+	int orBusyAmount();
+	int notBusyAmount();
+	int andFreePos();
+	int orFreePos();
+	int notFreePos();
+	bool allFree();
+	vector<string> run1cycle();
+	queue<string> andReady;
+	queue<string> orReady;
+	queue<string> notReady;
 
-class OrGate : public Res {
-public:
-	virtual BlifGate* isDone();
-};
-
-class NotGate : public Res {
-public:
-	virtual BlifGate* isDone();
+private:
+	vector<Res> andGate;
+	vector<Res> orGate;
+	vector<Res> notGate;
 };
 
 class Scheduling {
