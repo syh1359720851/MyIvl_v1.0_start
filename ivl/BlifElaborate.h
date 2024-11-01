@@ -33,6 +33,7 @@ public:
     void setGateinputs(const string& s) { GateInputs.push_back(s); } //创建端口名称
     void setGateinputs(const vector<string>& vec);
     void setGateType(GateType type) { myGateType = type; } // 设置端口类型
+    GateType getGateType() {return myGateType; } // 设置端口类型
     vector<string> getGateInputs(); 
     GateType getGateType() const;
 private:

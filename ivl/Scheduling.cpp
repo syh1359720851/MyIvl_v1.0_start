@@ -1,6 +1,6 @@
 #include "Scheduling.h"
 #include <deque>
-
+#include <stack>
 using namespace std;
 Res::~Res()
 {
@@ -365,117 +365,114 @@ void Scheduling::ML_RCS(int And, int Or, int Not)
 
 void Scheduling::MR_LCS(int cycle)
 {
-	// 根据ASAP确定最多的gate数量
-	// 减小一个gate看看能不能运行
-	//
-}
+	int And,Or,Not;
+	bool hadReady = false; //设置判断该一个cycle下的最少门
 
-int ResManage::andBusyAmount()
-{
-	int count = andGate.size();
-	for (auto& gate : andGate) {
-		if (!gate.isFree()) {
-			count--;
+	int tmpCycle = 0;
+	int tmp = 0; //设置暂存的cycle
+	bool hasAnd = false;And=1; //设置最初的与门使用为非
+	stack<int> andGate; //设置与门栈记录与门的使用情况
+
+	bool hasOr = false; Or=1;//设置最初的或门使用为非
+	stack<int> OrGate; //设置或门栈记录或门的使用情况
+
+	bool HasNot = false; Not=1;//设置最初的非门使用为非
+	stack<int> NotGate;//设置非门栈记录非门的使用情况
+	unordered_map<string, BlifGate*> MR_LCSMap(gateMap);
+	queue<string> ready; // 就绪队列
+	vector<vector<string>> gate_of_cycle; // 二维数组，行是cycle数
+
+	// 首先将所有的input放入就绪队列中
+	for (const string& input : inputGates) {
+		ready.push(input);
+	}
+	gate_of_cycle.push_back(inputGates);
+	if (cycle == 10) And = 2;
+	//现在对每一个就绪队列进行操作
+	while (!ready.empty()) {
+		// 每轮
+		int n = ready.size();
+		vector<string> currCycle;
+		for (int i = 0; i < n; i++) {
+			// 每轮中就绪队列的所有wire
+			// 获得当前input
+			string currgate = ready.front();
+			ready.pop();
+			if (cycle == 8) And = 3;
+			auto it = MR_LCSMap.begin();
+			for (it; it != MR_LCSMap.end(); ) {
+				if (cycle == 9) And = 3;
+				// 遍历所有value，如果有当前的wire，则删掉
+				it->second->deleteGate(currgate);
+				if (it->second->getGateInputs().size() == 0) {
+					// 如果该节点的前序节点已经全部就绪，则加入就绪队列
+					ready.push(it->first);
+					// 同时加入当前轮的vector中
+					currCycle.push_back(it->first);
+					// 在表中删除该节点，防止第二遍循环时再次发现value是0，再次加入vector中
+					it = MR_LCSMap.erase(it);
+				}
+				else {
+					++it;
+				}
+			}
+		}
+		// 将当前轮的vector加入到总的vector中
+		gate_of_cycle.push_back(currCycle);
+	}
+	//对除开第一次以外的每一轮进行操作
+	if(hadReady){
+		for (int i = 1; i < gate_of_cycle.size(); i++) {
+			//拿到每一轮的每一个gate
+			for (auto it : gate_of_cycle[i]) {
+				auto itGate = MR_LCSMap.find(it); //在map中找到该gate并对其gatetype进行记录
+
+				if (itGate->second->getGateType() == BlifGate::GateType::AND) {
+					hasAnd = true; //对与门进行添加
+					tmpCycle = tmpCycle > 2 ? tmpCycle : 2; //对暂存的cycle值进行记录
+					andGate.push(And--);
+				}
+				if (itGate->second->getGateType() == BlifGate::GateType::NOT) {
+					hasAnd = true; //对与门进行添加
+					tmpCycle = tmpCycle > 1 ? tmpCycle : 1; //对暂存的cycle值进行记录
+					NotGate.push(Not--);
+				}
+				if (itGate->second->getGateType() == BlifGate::GateType::OR) {
+					hasAnd = true; //对与门进行添加
+					tmpCycle = tmpCycle > 3 ? tmpCycle : 3; //对暂存的cycle值进行记录
+					OrGate.push(Or--);
+				}
+
+				if (hasAnd && HasNot && hasOr) hadReady = true;
+			}
+			//该轮结束后是否有门未进行使用，如果未使用那么就需要继续接着记录；
+			if (hadReady) {
+				tmp += tmpCycle;
+				tmpCycle = 0; //重置当前的暂存circle；
+
+				andGate.pop();//重置与门栈
+				And++;
+
+				OrGate.pop();//重置或门栈
+				Or++;
+
+				NotGate.pop();//重置非门栈
+				Not++;
+			}
 		}
 	}
-	return count;
-}
-
-int ResManage::orBusyAmount()
-{
-	int count = orGate.size();
-	for (auto& gate : orGate) {
-		if (!gate.isFree()) {
-			count--;
-		}
+	//在最后一次没有三种类型门都有的情况，加入最大cycle到tmp;
+	if (hasAnd) {
+		tmp += tmpCycle > 2 ? tmpCycle : 2; //对暂存的cycle值进行记录
 	}
-	return count;
-}
-
-int ResManage::notBusyAmount()
-{
-	int count = notGate.size();
-	for (auto& gate : notGate) {
-		if (!gate.isFree()) {
-			count--;
-		}
+	if (hasOr) {
+		tmp += tmpCycle > 3 ? tmpCycle : 3; //对暂存的cycle值进行记录
 	}
-	return count;
-}
-
-int ResManage::andFreePos()
-{
-	for (int i = 0; i < andGate.size(); i++) {
-		if (andGate[i].isFree()) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-int ResManage::orFreePos()
-{
-	for (int i = 0; i < orGate.size(); i++) {
-		if (orGate[i].isFree()) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-int ResManage::notFreePos()
-{
-	for (int i = 0; i < notGate.size(); i++) {
-		if (notGate[i].isFree()) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-bool ResManage::allFree() // return 1 表示全都free
-{
-	return !(andBusyAmount() && orBusyAmount() && notBusyAmount());
-}
-
-std::vector<std::string> ResManage::run1cycle() // 返回该轮已经完成的gate
-{	
-	vector<string> result;
-	// 如果有空位，将就绪队列中的放入执行
-	while (int i = andFreePos() != -1 && !andReady.empty()) {
-		andGate[i].Start(andReady.front());
-		andReady.pop();
-	}
-	while (int i = orFreePos() != -1 && !orReady.empty()) {
-		orGate[i].Start(andReady.front());
-		orReady.pop();
-	}
-	while (int i = notFreePos() != -1 && !notReady.empty()) {
-		notGate[i].Start(notReady.front());
-		notReady.pop();
+	if (HasNot) {
+		tmp += tmpCycle > 1 ? tmpCycle : 1; //对暂存的cycle值进行记录
 	}
 
-	// 执行
-	for (auto& gate : andGate) {
-		gate.Run1cycle();
-		if (gate.getCycle() == 2) {
-			result.push_back(gate.getGate());
-			gate.ResetCycle();
-		}
+	if (cycle) {
+		std::cout << to_string(And)<<" " << to_string(Not)<<" " << to_string(Or) << std::endl;
 	}
-	for (auto& gate : orGate) {
-		gate.Run1cycle();
-		if (gate.getCycle() == 3) {
-			result.push_back(gate.getGate());
-			gate.ResetCycle();
-		}
-	}
-	for (auto& gate : notGate) {
-		gate.Run1cycle();
-		if (gate.getCycle() == 1) {
-			result.push_back(gate.getGate());
-			gate.ResetCycle();
-		}
-	}
-	return result;
 }

@@ -1,4 +1,4 @@
-module sample(clk, rst,o,p,q,a,b,c,d,e,f);
+module testEz(clk, rst,o,p,q,a,b,c,d,e,f);
 input clk,rst;
 output o;
 output p;
